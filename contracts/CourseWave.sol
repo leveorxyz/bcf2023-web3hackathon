@@ -37,15 +37,47 @@ contract CourseWave is Ownable{
     // student ID => course ID => marks
     mapping (uint256 => mapping (uint256=>uint256)) marks;
 
+    uint256 latestStudentId=1;
     mapping (address=>Student) students;
 
-    uint256 latestInstructorId;
+    uint256 latestInstructorId=1;
     Instuctor[] instructors;
 
     event CreateCourse(
         uint256 courseId,
         uint256 createdAt
     );
+
+    function checkInstructorExist(address addrs) internal view returns(bool){
+        bool instructorExist = false;
+        for (uint i = 0; i < instructors.length; i++) {
+            if(instructors[i].instructorEthAddress == addrs){
+                instructorExist = true;
+                break;
+            }
+        }
+        return instructorExist;
+    }
+
+    modifier isNotInstructor(address addressToCheck) {
+        require(!checkInstructorExist(addressToCheck), "Already an instructor");
+        _;
+    }
+
+    modifier isNotStudent(address addressToCheck) {
+        require(students[addressToCheck].id != 0, "Already a student");
+        _;
+    }
+
+    modifier isInstructor(address addressToCheck) {
+        require(checkInstructorExist(addressToCheck), "Not an instructor");
+        _;
+    }
+
+    modifier isStudent(address addressToCheck) {
+        require(students[addressToCheck].id == 0, "Is not a student");
+        _;
+    }
 
     constructor(Instuctor[] memory _instructors) {
         instructors = _instructors;
