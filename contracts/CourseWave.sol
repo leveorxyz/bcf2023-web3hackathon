@@ -13,7 +13,7 @@ contract CourseWave is Ownable{
     }
 
     struct Instuctor{
-        uint256 id;
+        uint128 id;
         address instructorEthAddress;
         string name;
     }
@@ -30,12 +30,12 @@ contract CourseWave is Ownable{
     address erc20Address;
     address nftAddress;
 
-    uint256 latestCourseId;
-    // instructorIDs => Course[]
-    mapping(uint256 => Course[]) courses;
+    uint128 latestCourseId;
+    // instructor address => Course[]
+    mapping(address => Course[]) courses;
 
-    // courseID => student IDs
-    mapping(uint256 => mapping (uint256 => bool)) courseEnrollment;
+    // courseID => student IDs => enrollment time
+    mapping(uint256 => mapping (uint256 => uint256)) courseEnrollment;
 
     // student ID => course ID => marks
     mapping (uint256 => mapping (uint256=>uint256)) marks;
@@ -43,7 +43,7 @@ contract CourseWave is Ownable{
     uint256 latestStudentId;
     mapping (address=>Student) students;
 
-    uint256 latestInstructorId;
+    uint128 latestInstructorId;
     Instuctor[] instructors;
 
     event CreateCourse(
@@ -51,19 +51,19 @@ contract CourseWave is Ownable{
         uint256 createdAt
     );
 
-    function checkInstructorExist(address addrs) internal view returns(bool){
-        bool instructorExist = false;
+    function getInstructorId(address addrs) internal view returns(uint128){
+        uint128 instructorId = 999999999999;
         for (uint i = 0; i < instructors.length; i++) {
             if(instructors[i].instructorEthAddress == addrs){
-                instructorExist = true;
+                instructorId = instructors[i].id;
                 break;
             }
         }
-        return instructorExist;
+        return instructorId;
     }
 
     modifier isNotInstructor(address addressToCheck) {
-        require(!checkInstructorExist(addressToCheck), "Already an instructor");
+        require(getInstructorId(addressToCheck) == 999999999999, "Already an instructor");
         _;
     }
 
@@ -73,7 +73,7 @@ contract CourseWave is Ownable{
     }
 
     modifier isInstructor(address addressToCheck) {
-        require(checkInstructorExist(addressToCheck), "Not an instructor");
+        require(getInstructorId(addressToCheck) != 999999999999, "Not an instructor");
         _;
     }
 
@@ -117,7 +117,17 @@ contract CourseWave is Ownable{
         uint256 duration,
         uint256 stakingAmount
     ) external {
-        
+        uint128 instructorID = getInstructorId(msg.sender);
+        require(instructorID != 999999999999, "Instructor do not exist");
+        courses[msg.sender].push(Course(
+            latestCourseId,
+            name,
+            instructorID,
+            description,
+            duration,
+            stakingAmount
+        ));
+        latestCourseId++;
     }
 
     function stake() internal {
