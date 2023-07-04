@@ -36,11 +36,12 @@ contract CourseWave is Ownable{
     // instructor id => Course[]
     mapping(uint128 => Course[]) courses;
 
-    // courseID => student address => enrollment time
-    mapping(uint128 => mapping (address => uint256)) courseEnrollment;
+    // courseID => student addresses
+    mapping(uint128 => address[]) courseEnrollment;
+
 
     // student ID => course ID => marks
-    mapping (uint256 => mapping (uint128=>uint256)) marks;
+    mapping (address => mapping (uint128=>uint256)) marks;
 
     uint256 latestStudentId;
     mapping (address=>Student) students;
@@ -167,16 +168,16 @@ contract CourseWave is Ownable{
     ) external payable courseExist(courseId) isStudent(msg.sender){
         Course memory course = getCourse(courseId, instructorId);
         require(msg.value == course.stakingAmount, "Staking amount not corrcet");
-        courseEnrollment[courseId][msg.sender] = block.timestamp;
+        courseEnrollment[courseId].push(msg.sender);
         stake(msg.sender, courseId, msg.value);
     }
 
     function assignMarks(
         uint128 courseId,
-        uint256 studentId,
+        address studentAddress,
         uint256 number
     ) external isInstructor(msg.sender) {
-        marks[studentId][courseId] = number;        
+        marks[studentAddress][courseId] = number;        
     }
 
     function issueCertificate(
@@ -185,11 +186,27 @@ contract CourseWave is Ownable{
         IERC721(nftAddress).safeMint(studentAddress);
     }
 
-    function distributeStakes() external {
-        
+    function distributeStakes() external{
+        uint128 instructorID = getInstructorId(msg.sender);
+        require(instructorID != 999999999999, "Instructor do not exist");
+        Course[] memory allCourses = courses[instructorID];
+        for (uint i = 0; i < allCourses.length; i++) {
+            uint128 courseId = allCourses[i].id;
+            address[] memory studentAddresses = courseEnrollment[courseId];
+            for (uint j = 0; j < studentAddresses.length; i++) {
+                address studetAddress = studentAddresses[j];
+                if(marks[studetAddress][courseId] > 0){
+                     bool sent = payable(studentAddresses[j]).send(stakingAmounts[studetAddress][courseId]);
+                     require(sent, "Failed to send Ether");
+                     stakingAmounts[studetAddress][courseId] = 0;
+                }
+            }
+        }
     }
 
-    function distributeStake() external {
+    function distributeStake(
+        address studentAddress
+    ) external isInstructor(msg.sender){
         
     }
 
