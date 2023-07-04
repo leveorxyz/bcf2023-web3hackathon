@@ -83,10 +83,15 @@ contract CourseWave is Ownable{
         instructors = _instructors;
     }
 
-     function onBoardStudent(
+    function onBoardStudent(
         string calldata name
-    ) external { 
-        
+    ) external isNotStudent(msg.sender) { 
+        students[msg.sender] = Student(
+            latestStudentId,
+            msg.sender,
+            name
+        );
+        latestStudentId++;
     }
 
     function addInstrutor(
