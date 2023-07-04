@@ -213,8 +213,10 @@ contract CourseWave is Ownable{
         }
     }
 
-    function getCourses() external view returns(Course[] memory){
-        
+    function getCourses(
+        uint128 instructorId
+    ) external view returns(Course[] memory){
+        return courses[instructorId];        
     }
 
     function getEnrolledStudents() external view returns(Student[] memory){
