@@ -171,8 +171,12 @@ contract CourseWave is Ownable{
         stake(msg.sender, courseId, msg.value);
     }
 
-    function assignMarks() external {
-        
+    function assignMarks(
+        uint128 courseId,
+        uint256 studentId,
+        uint256 number
+    ) external isInstructor(msg.sender) {
+        marks[studentId][courseId] = number;        
     }
 
     function issueCertificate() external {
