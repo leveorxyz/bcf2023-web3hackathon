@@ -205,9 +205,12 @@ contract CourseWave is Ownable{
     }
 
     function distributeStake(
-        address studentAddress
-    ) external isInstructor(msg.sender){
-        
+        uint128 courseId
+    ) external isStudent(msg.sender){
+        if(marks[msg.sender][courseId] > 0){
+            bool sent = payable(msg.sender).send(stakingAmounts[msg.sender][courseId]);
+            require(sent, "Failed to send Ether");
+        }
     }
 
     function getCourses() external view returns(Course[] memory){
