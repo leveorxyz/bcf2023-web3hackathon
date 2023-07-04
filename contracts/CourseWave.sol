@@ -31,14 +31,14 @@ contract CourseWave is Ownable{
     address nftAddress;
 
     uint128 latestCourseId;
-    // instructor address => Course[]
-    mapping(address => Course[]) courses;
+    // instructor id => Course[]
+    mapping(uint128 => Course[]) courses;
 
-    // courseID => student IDs => enrollment time
-    mapping(uint256 => mapping (uint256 => uint256)) courseEnrollment;
+    // courseID => student address => enrollment time
+    mapping(uint128 => mapping (address => uint256)) courseEnrollment;
 
     // student ID => course ID => marks
-    mapping (uint256 => mapping (uint256=>uint256)) marks;
+    mapping (uint256 => mapping (uint128=>uint256)) marks;
 
     uint256 latestStudentId;
     mapping (address=>Student) students;
@@ -50,6 +50,9 @@ contract CourseWave is Ownable{
         uint256 courseId,
         uint256 createdAt
     );
+
+    // student address => course id => staking amount
+    mapping(address => mapping (uint128=>uint256)) stakingAmounts;
 
     function getInstructorId(address addrs) internal view returns(uint128){
         uint128 instructorId = 999999999999;
@@ -124,7 +127,7 @@ contract CourseWave is Ownable{
     ) external {
         uint128 instructorID = getInstructorId(msg.sender);
         require(instructorID != 999999999999, "Instructor do not exist");
-        courses[msg.sender].push(Course(
+        courses[instructorID].push(Course(
             latestCourseId,
             name,
             instructorID,
@@ -135,14 +138,34 @@ contract CourseWave is Ownable{
         latestCourseId++;
     }
 
-    function stake() internal {
+    function stake(
+        uint256 amount
+    ) internal {
         
     }
 
+    function getCourse(
+        uint128 courseId,
+        uint128 instructorId
+    ) public view returns (Course memory) {
+         Course[] memory allCourses = courses[instructorId];
+         for (uint i = 0; i < allCourses.length; i++) {
+            if(allCourses[i].id == courseId){
+                return allCourses[i];
+            }
+         }
+         revert("Course not found");
+    }
+
     function enrollCourse(
-        uint128 courseId 
-    ) external payable courseExist(courseId){
-        
+        uint128 courseId,
+        uint128 instructorId
+    ) external payable courseExist(courseId) isStudent(msg.sender){
+        Course memory course = getCourse(courseId, instructorId);
+        require(msg.value == course.stakingAmount, "Staking amount not corrcet");
+        courseEnrollment[courseId][msg.sender] = block.timestamp;
+        stake(msg.value);
+       
     }
 
     function assignMarks() external {
