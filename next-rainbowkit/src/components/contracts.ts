@@ -1,7 +1,8 @@
 import { erc20ABI } from 'wagmi'
+import courseWaveABI from '../../abis/courseWave.json';
 
 export const wagmiContractConfig = {
-  address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  address: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9',
   abi: [
     { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
     {
@@ -207,3 +208,8 @@ export const usdcContractConfig = {
   address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   abi: erc20ABI,
 } as const
+
+export const courseWaveContract = {
+  address: "",
+  abi: courseWaveABI
+}
