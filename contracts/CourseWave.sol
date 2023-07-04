@@ -31,7 +31,7 @@ contract CourseWave {
     mapping(uint256 => Course[]) courses;
 
     // courseID => student IDs
-    mapping(uint256 => uint256[]) courseEnrollment;
+    mapping(uint256 => mapping (uint256 => bool)) courseEnrollment;
 
     // student ID => course ID => marks
     mapping (uint256 => mapping (uint256=>uint256)) marks;
@@ -98,7 +98,22 @@ contract CourseWave {
     function distributeStake() external {
         
     }
-    
-    
+
+    function getCourses() external view returns(Course[] memory){
+        
+    }
+
+    function getEnrolledStudents() external view returns(Student[] memory){
+        
+    }
+
+    function getEnrolledCourses() external view returns(Course[] memory){
+        
+    }
+
+    function getCertificates() external view returns(Course[] memory){
+        
+    }
+ 
 
 }
