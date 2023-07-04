@@ -37,10 +37,10 @@ contract CourseWave is Ownable{
     // student ID => course ID => marks
     mapping (uint256 => mapping (uint256=>uint256)) marks;
 
-    uint256 latestStudentId=1;
+    uint256 latestStudentId;
     mapping (address=>Student) students;
 
-    uint256 latestInstructorId=1;
+    uint256 latestInstructorId;
     Instuctor[] instructors;
 
     event CreateCourse(
@@ -65,7 +65,7 @@ contract CourseWave is Ownable{
     }
 
     modifier isNotStudent(address addressToCheck) {
-        require(students[addressToCheck].id != 0, "Already a student");
+        require(students[addressToCheck].studentEthAddress != address(0), "Already a student");
         _;
     }
 
@@ -75,7 +75,7 @@ contract CourseWave is Ownable{
     }
 
     modifier isStudent(address addressToCheck) {
-        require(students[addressToCheck].id == 0, "Is not a student");
+        require(students[addressToCheck].studentEthAddress == address(0), "Is not a student");
         _;
     }
 
@@ -90,8 +90,8 @@ contract CourseWave is Ownable{
     }
 
     function addInstrutor(
-
-    ) external onlyOwner {
+        string calldata name
+    ) external onlyOwner isNotInstructor(msg.sender)  {
         
     }
 
