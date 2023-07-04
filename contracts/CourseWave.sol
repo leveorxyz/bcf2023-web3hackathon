@@ -92,7 +92,12 @@ contract CourseWave is Ownable{
     function addInstrutor(
         string calldata name
     ) external onlyOwner isNotInstructor(msg.sender)  {
-        
+        instructors[latestInstructorId] = Instuctor(
+            latestInstructorId,
+            msg.sender,
+            name
+        );
+        latestInstructorId++;
     }
 
     function createCourse(
