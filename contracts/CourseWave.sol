@@ -62,6 +62,11 @@ contract CourseWave is Ownable{
         return instructorId;
     }
 
+    modifier courseExist(uint128 courseIdToCheck) {
+        require(courseIdToCheck<latestCourseId, "Course ID do not exist");
+        _;
+    }
+
     modifier isNotInstructor(address addressToCheck) {
         require(getInstructorId(addressToCheck) == 999999999999, "Already an instructor");
         _;
@@ -135,8 +140,8 @@ contract CourseWave is Ownable{
     }
 
     function enrollCourse(
-
-    ) external {
+        uint128 courseId 
+    ) external payable courseExist(courseId){
         
     }
 
