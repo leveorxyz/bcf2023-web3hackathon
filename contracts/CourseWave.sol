@@ -94,7 +94,11 @@ contract CourseWave is Ownable{
     }
 
     constructor(Instuctor[] memory _instructors, address _erc20Address, address _nftAddress) {
-        instructors = _instructors;
+        // instructors = _instructors;
+        for (uint i = 0; i < _instructors.length; i++) {
+            instructors[i] = _instructors[i];
+            latestInstructorId++;
+        }
         erc20Address = _erc20Address;
         _nftAddress = _nftAddress;
     }

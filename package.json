@@ -6,6 +6,11 @@
     "hardhat": "^2.16.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2"
+    "@openzeppelin/contracts": "^4.9.2",
+    "dotenv": "^16.3.1"
+  },
+  "scripts": {
+    "deploy:sepolia": "npx hardhat run --network sepolia scripts/deploy.ts",
+    "test": "npx hardhat test"
   }
 }
