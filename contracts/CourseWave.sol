@@ -2,8 +2,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CourseWave {
+contract CourseWave is Ownable{
 
     struct Student{
         uint256 id;
@@ -58,7 +59,7 @@ contract CourseWave {
 
     function addInstrutor(
 
-    ) external {
+    ) external onlyOwner {
         
     }
 
@@ -70,8 +71,6 @@ contract CourseWave {
     ) external {
         
     }
-
-
 
     function stake() internal {
         
