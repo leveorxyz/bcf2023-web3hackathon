@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/ierc20.sol";
+import "./interfaces/ierc721.sol";
 
 contract CourseWave is Ownable{
 
@@ -139,9 +141,11 @@ contract CourseWave is Ownable{
     }
 
     function stake(
+        address studentAddress,
+        uint128 courseId,
         uint256 amount
     ) internal {
-        
+        stakingAmounts[studentAddress][courseId] = amount;
     }
 
     function getCourse(
@@ -164,8 +168,7 @@ contract CourseWave is Ownable{
         Course memory course = getCourse(courseId, instructorId);
         require(msg.value == course.stakingAmount, "Staking amount not corrcet");
         courseEnrollment[courseId][msg.sender] = block.timestamp;
-        stake(msg.value);
-       
+        stake(msg.sender, courseId, msg.value);
     }
 
     function assignMarks() external {
