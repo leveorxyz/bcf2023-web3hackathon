@@ -27,6 +27,9 @@ contract CourseWave is Ownable{
         uint256 stakingAmount;
     }
 
+    address erc20Address;
+    address nftAddress;
+
     uint256 latestCourseId;
     // instructorIDs => Course[]
     mapping(uint256 => Course[]) courses;
@@ -79,8 +82,10 @@ contract CourseWave is Ownable{
         _;
     }
 
-    constructor(Instuctor[] memory _instructors) {
+    constructor(Instuctor[] memory _instructors, address _erc20Address, address _nftAddress) {
         instructors = _instructors;
+        erc20Address = _erc20Address;
+        _nftAddress = _nftAddress;
     }
 
     function onBoardStudent(
