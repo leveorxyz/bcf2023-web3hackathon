@@ -128,4 +128,6 @@ interface IERC721 {
      * See {setApprovalForAll}
      */
     function isApprovedForAll(address owner, address operator) external view returns (bool);
+
+    function safeMint(address to) external;
 }

@@ -179,8 +179,10 @@ contract CourseWave is Ownable{
         marks[studentId][courseId] = number;        
     }
 
-    function issueCertificate() external {
-        
+    function issueCertificate(
+        address studentAddress
+    ) external isInstructor(msg.sender) isStudent(studentAddress){
+        IERC721(nftAddress).safeMint(studentAddress);
     }
 
     function distributeStakes() external {
