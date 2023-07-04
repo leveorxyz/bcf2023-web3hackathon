@@ -138,6 +138,12 @@ contract CourseWave is Ownable{
             duration,
             stakingAmount
         ));
+
+        emit CreateCourse(
+            latestCourseId,
+            block.timestamp
+        );
+
         latestCourseId++;
     }
 
@@ -219,8 +225,16 @@ contract CourseWave is Ownable{
         return courses[instructorId];        
     }
 
-    function getEnrolledStudents() external view returns(Student[] memory){
-        
+    function getEnrolledStudents(
+        uint128 courseId
+    ) external view returns(Student[] memory){
+        address[] memory allStudentAddresses = courseEnrollment[courseId];
+        uint256 numberOfStudents = allStudentAddresses.length;
+        Student[] memory allStudentsEnrolled = new Student[](numberOfStudents);
+        for (uint i = 0; i < allStudentAddresses.length; i++) {
+            allStudentsEnrolled[i] = students[allStudentAddresses[i]];
+        }
+        return allStudentsEnrolled;
     }
 
     function getEnrolledCourses() external view returns(Course[] memory){
