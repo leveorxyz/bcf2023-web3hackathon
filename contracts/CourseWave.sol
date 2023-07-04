@@ -237,12 +237,9 @@ contract CourseWave is Ownable{
         return allStudentsEnrolled;
     }
 
-    function getEnrolledCourses() external view returns(Course[] memory){
-        
-    }
-
-    function getCertificates() external view returns(Course[] memory){
-        
+    function getTotalCertificates(
+    ) external view isStudent(msg.sender) returns(uint256){
+        return IERC721(nftAddress).balanceOf(msg.sender);
     }
  
 
