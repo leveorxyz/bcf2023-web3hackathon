@@ -14,7 +14,7 @@ contract CourseWave is Ownable{
         string name;
     }
 
-    struct Instuctor{
+    struct Instructor{
         uint128 id;
         address instructorEthAddress;
         string name;
@@ -22,12 +22,13 @@ contract CourseWave is Ownable{
 
     struct Course{
         uint128 id;
-        string name;
         uint128 instructorId;
+        string name;
         string description;
         uint256 duration;
         uint256 stakingAmount;
     }
+    
 
     address erc20Address;
     address nftAddress;
@@ -47,13 +48,13 @@ contract CourseWave is Ownable{
     mapping (address=>Student) students;
 
     uint128 latestInstructorId;
-    Instuctor[] instructors;
+    Instructor[] instructors;
 
     event CreateCourse(
         uint256 courseId,
         uint256 createdAt
     );
-
+  
     // student address => course id => staking amount
     mapping(address => mapping (uint128=>uint256)) stakingAmounts;
 
@@ -79,7 +80,7 @@ contract CourseWave is Ownable{
     }
 
     modifier isNotStudent(address addressToCheck) {
-        require(students[addressToCheck].studentEthAddress != address(0), "Already a student");
+        require(students[addressToCheck].studentEthAddress == address(0), "Already a student");
         _;
     }
 
@@ -89,28 +90,35 @@ contract CourseWave is Ownable{
     }
 
     modifier isStudent(address addressToCheck) {
-        require(students[addressToCheck].studentEthAddress == address(0), "Is not a student");
+        require(students[addressToCheck].studentEthAddress != address(0), "Is not a student");
         _;
     }
 
-    constructor(Instuctor[] memory _instructors, address _erc20Address, address _nftAddress) {
+
+    constructor(address _erc20Address, address _nftAddress) {
         // instructors = _instructors;
-        for (uint i = 0; i < _instructors.length; i++) {
-            instructors[i] = _instructors[i];
-            latestInstructorId++;
-        }
+        // for (uint i = 0; i < _instructors.length; i++) {
+        //     instructors[i] = _instructors[i];
+        //     latestInstructorId++;
+        // }
+
         erc20Address = _erc20Address;
-        _nftAddress = _nftAddress;
+        nftAddress = _nftAddress;
     }
 
     function onBoardStudent(
         string calldata name
     ) external isNotStudent(msg.sender) { 
-        students[msg.sender] = Student(
-            latestStudentId,
-            msg.sender,
-            name
-        );
+        // students[msg.sender] = Student(
+        //     latestStudentId,
+        //     msg.sender,
+        //     name
+        // );
+        Student storage student = students[msg.sender];
+
+        student.name = name;
+        student.id = latestStudentId;
+        student.studentEthAddress = msg.sender;
         latestStudentId++;
     }
 
@@ -118,12 +126,30 @@ contract CourseWave is Ownable{
         string calldata name,
         address instructorAddress
     ) external onlyOwner isNotInstructor(instructorAddress)  {
-        instructors[latestInstructorId] = Instuctor(
+        // instructors[latestInstructorId] = Instructor(
+        //     latestInstructorId,
+        //     instructorAddress,
+        //     name
+        // );
+        instructors.push(
+            Instructor(
             latestInstructorId,
             instructorAddress,
             name
+          )
         );
+
+        // Instructor storage instructor = instructors[
+        //     instructors.length
+        // ];
+        // instructor.name = name;
+        // instructor.id = latestInstructorId;
+        // instructor.instructorEthAddress =instructorAddress;
         latestInstructorId++;
+    }
+
+    function getAllInstructor() external view returns(Instructor[] memory){
+        return instructors;
     }
 
     function createCourse(
@@ -136,8 +162,8 @@ contract CourseWave is Ownable{
         require(instructorID != 999999999999, "Instructor do not exist");
         courses[instructorID].push(Course(
             latestCourseId,
-            name,
             instructorID,
+            name,
             description,
             duration,
             stakingAmount
@@ -245,6 +271,11 @@ contract CourseWave is Ownable{
     ) external view isStudent(msg.sender) returns(uint256){
         return IERC721(nftAddress).balanceOf(msg.sender);
     }
- 
 
+    function getStudent(
+        address studentAddress
+    ) external view isStudent(studentAddress) returns(Student memory){
+        return students[studentAddress];
+    }
+ 
 }
