@@ -11,7 +11,8 @@
   },
   "scripts": {
     "deploy:sepolia": "npx hardhat run --network sepolia scripts/deploy.ts",
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
 
   }
 }
